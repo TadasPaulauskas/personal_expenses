@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
               headline6: const TextStyle(
                 fontFamily: 'OpenSans',
                 fontSize: 17,
-                //fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.bold,
               ),
             ),
         appBarTheme: const AppBarTheme(
