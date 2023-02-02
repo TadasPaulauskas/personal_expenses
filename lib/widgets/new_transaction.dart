@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import './adaptive_button.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
@@ -107,18 +108,7 @@ class _NewTransactionState extends State<NewTransaction> {
                   ],
                 ),
               ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Theme.of(context).textTheme.button?.color,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  //elevation: 5,
-                ),
-                onPressed: _submitData,
-                child: const Text('Add Transaction'),
-              ),
+              AdaptiveButton('Choose Date', _presentDatePicker),
             ],
           ),
         ),
