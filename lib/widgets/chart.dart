@@ -40,7 +40,6 @@ class Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('build() Chart');
     return SizedBox(
       child: Card(
         elevation: 6,
