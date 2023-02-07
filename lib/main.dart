@@ -13,11 +13,11 @@ void main() {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +26,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Personal Expenses',
       theme: ThemeData(
-        primarySwatch: Colors.purple,
-        accentColor: Colors.amber,
-        errorColor: Colors.red,
         fontFamily: 'Quicksand',
         textTheme: ThemeData.light().textTheme.copyWith(
               headline6: const TextStyle(
@@ -47,6 +44,9 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
+            .copyWith(error: Colors.red)
+            .copyWith(secondary: Colors.amber),
       ),
       home: const MyHomePage(),
     );
@@ -119,12 +119,61 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+  List<Widget> _buildLandscapeContent(
+    MediaQueryData mediaQuery,
+    AppBar appBar,
+    txListWidget,
+  ) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Show Chart',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          Switch.adaptive(
+            activeColor: Theme.of(context).primaryColor,
+            value: _showChart,
+            onChanged: (value) {
+              setState(() {
+                _showChart = value;
+              });
+            },
+          ),
+        ],
+      ),
+      _showChart
+          ? Container(
+              height: (mediaQuery.size.height -
+                      appBar.preferredSize.height -
+                      mediaQuery.padding.top) *
+                  0.3,
+              child: Chart(recentTransactions: _recentTransactions),
+            )
+          : txListWidget,
+    ];
+  }
 
-    final dynamic appBar = Platform.isIOS
+  List<Widget> _buildPortraitContent(
+    MediaQueryData mediaQuery,
+    AppBar appBar,
+    txListWidget,
+  ) {
+    return [
+      Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            0.3,
+        child: Chart(recentTransactions: _recentTransactions),
+      ),
+      txListWidget,
+    ];
+  }
+
+  Widget _buildAppBar() {
+    return Platform.isIOS
         ? CupertinoNavigationBar(
             middle: const Text(
               'Personal Expenses',
@@ -150,6 +199,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    final dynamic appBar = _buildAppBar();
 
     final txListWidget = Container(
       height: (mediaQuery.size.height -
@@ -169,43 +226,17 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Show Chart',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  Switch.adaptive(
-                    activeColor: Theme.of(context).primaryColor,
-                    value: _showChart,
-                    onChanged: (value) {
-                      setState(() {
-                        _showChart = value;
-                      });
-                    },
-                  ),
-                ],
+              ..._buildLandscapeContent(
+                mediaQuery,
+                appBar,
+                txListWidget,
               ),
             if (!isLandscape)
-              Container(
-                height: (mediaQuery.size.height -
-                        appBar.preferredSize.height -
-                        mediaQuery.padding.top) *
-                    0.3,
-                child: Chart(recentTransactions: _recentTransactions),
+              ..._buildPortraitContent(
+                mediaQuery,
+                appBar,
+                txListWidget,
               ),
-            if (!isLandscape) txListWidget,
-            if (isLandscape)
-              _showChart
-                  ? Container(
-                      height: (mediaQuery.size.height -
-                              appBar.preferredSize.height -
-                              mediaQuery.padding.top) *
-                          0.3,
-                      child: Chart(recentTransactions: _recentTransactions),
-                    )
-                  : txListWidget
           ],
         ),
       ),

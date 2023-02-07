@@ -6,7 +6,10 @@ import '../models/transaction.dart';
 class Chart extends StatelessWidget {
   final List<Transaction> recentTransactions;
 
-  const Chart({super.key, required this.recentTransactions});
+  const Chart({
+    super.key,
+    required this.recentTransactions,
+  });
 
   List<Map<String, Object>> get groupTransactionsValues {
     return List.generate(7, (index) {
@@ -37,6 +40,7 @@ class Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('build() Chart');
     return SizedBox(
       child: Card(
         elevation: 6,
